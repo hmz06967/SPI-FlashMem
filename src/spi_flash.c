@@ -1,15 +1,10 @@
 #include "spi_flash.h"
 
-#define flash_cs 5
-uint8_t read_data[SECTOR_BYTE];
-uint8_t write_data[SECTOR_BYTE];
-uint16_t test_number, test_addr = 0;
-char pData[50];
+uint8_t FLASH_CS = 5;
 
-
-uint8_t init_flash(void){
+uint8_t init_flash(uint8_t cs){
   // put your setup code here, to run once:
-  pinMode(flash_cs, OUTPUT);
+  pinMode(FLASH_CS, OUTPUT);
   SPI.begin();
   SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
 
@@ -17,19 +12,19 @@ uint8_t init_flash(void){
 }
 
 void read_register(uint8_t cmd, uint8_t *regdata, uint8_t size){
-  digitalWrite(flash_cs, LOW);
+  digitalWrite(FLASH_CS, LOW);
   SPI.transfer(cmd); // JEDEC ID komutunu gönder
   for (uint8_t i=0; i<size; i++) {
     regdata[i] = SPI.transfer(0x00);
   }
-  digitalWrite(flash_cs, HIGH);
+  digitalWrite(FLASH_CS, HIGH);
 }
 
 uint8_t write_cmd(uint8_t cmd){
   uint8_t status = FLASH_OK;
-  digitalWrite(flash_cs, LOW);
+  digitalWrite(FLASH_CS, LOW);
   status = SPI.transfer(cmd); // RESUME komutunu gönder
-  digitalWrite(flash_cs, HIGH);
+  digitalWrite(FLASH_CS, HIGH);
   return status==FLASH_OK;
 }
 
@@ -101,14 +96,14 @@ uint8_t write_flash(uint32_t address, uint8_t *data, uint32_t size){
 
     size = ((page_byte>PAGE_BYTE) ? PAGE_BYTE : page_byte);
     //write page
-    digitalWrite(flash_cs, LOW);
+    digitalWrite(FLASH_CS, LOW);
     write_addr(0x02, address);
     //write data
 
     for (uint8_t i=0; i<(size); i++) {
       status = SPI.transfer(data[i]);
     }
-    digitalWrite(flash_cs, HIGH);
+    digitalWrite(FLASH_CS, HIGH);
 
     address += PAGE_BYTE;
     page_byte -=PAGE_BYTE;
@@ -122,12 +117,12 @@ uint8_t write_flash(uint32_t address, uint8_t *data, uint32_t size){
 
 uint8_t read_flash(uint32_t address, uint8_t *data, uint32_t size){ 
   uint8_t status = FLASH_OK;
-  digitalWrite(flash_cs, LOW);
+  digitalWrite(FLASH_CS, LOW);
   write_addr(0x03, address);
   for (uint32_t i=0; i<size; i++) {
     data[i] = SPI.transfer(0x00);
   }
-  digitalWrite(flash_cs, HIGH);
+  digitalWrite(FLASH_CS, HIGH);
   return status;
 }
 

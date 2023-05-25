@@ -16,7 +16,7 @@
 #define FLASH_ERR_PARAM 2
 
 
-uint8_t init_flash(void);
+uint8_t init_flash(uint8_t cs = 5);
 uint8_t reset_flash(void);
 
 void read_register(uint8_t cmd, uint8_t *regdata, uint8_t size);

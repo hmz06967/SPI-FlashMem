@@ -6,6 +6,11 @@
 
 #include <spi_flash.h>
 
+uint8_t read_data[SECTOR_BYTE];
+uint8_t write_data[SECTOR_BYTE];
+uint16_t test_number, test_addr = 0;
+char pData[50];
+
 void setup() {
 
   Serial.begin(115200);
