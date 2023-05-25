@@ -1,8 +1,13 @@
+#include <SPI.h>
 #include "spi_flash.h"
 
 uint8_t FLASH_CS = 5;
 
-uint8_t init_flash(uint8_t cs){
+void flash_set_cs(uint8_t cs){
+  FLASH_CS = cs;
+}
+
+uint8_t init_flash(void){
   // put your setup code here, to run once:
   pinMode(FLASH_CS, OUTPUT);
   SPI.begin();

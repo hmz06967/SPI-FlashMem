@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <SPI.h>
 
 //w25q32 defination 
 #define FLASH_BYTE      ((4) * 1024 * 1024)  //4MB
@@ -16,8 +15,9 @@
 #define FLASH_ERR_PARAM 2
 
 
-uint8_t init_flash(uint8_t cs = 5);
+uint8_t init_flash(void);
 uint8_t reset_flash(void);
+void flash_set_cs(uint8_t cs);
 
 void read_register(uint8_t cmd, uint8_t *regdata, uint8_t size);
 uint8_t write_cmd(uint8_t cmd);
