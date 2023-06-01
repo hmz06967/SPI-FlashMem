@@ -19,7 +19,9 @@ uint8_t init_flash(void);
 uint8_t reset_flash(void);
 void flash_set_cs(uint8_t cs);
 
+uint16_t read_device_id(void);
 void read_register(uint8_t cmd, uint8_t *regdata, uint8_t size);
+uint8_t write_register(uint8_t cmd, uint8_t *regdata, uint8_t size);
 uint8_t write_cmd(uint8_t cmd);
 void write_enable(void);
 void write_addr(uint32_t cmd, uint32_t address);

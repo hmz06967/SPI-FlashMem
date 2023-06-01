@@ -8,12 +8,20 @@ void flash_set_cs(uint8_t cs){
 }
 
 uint8_t init_flash(void){
+  uint8_t status = FLASH_OK;
+  uint8_t wr[1] = {0x00};
   // put your setup code here, to run once:
   pinMode(FLASH_CS, OUTPUT);
   SPI.begin();
   SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
 
-  return reset_flash();
+  //write_enable();
+  digitalWrite(FLASH_CS, HIGH);
+  SPI.transfer(0XAB); // POWER komutunu gönder
+  read_device_id();
+  status = write_register(0x01, wr, 1);//KORUMAYI kaldır
+  wait_flash();
+  return status;
 }
 
 void read_register(uint8_t cmd, uint8_t *regdata, uint8_t size){
@@ -23,6 +31,18 @@ void read_register(uint8_t cmd, uint8_t *regdata, uint8_t size){
     regdata[i] = SPI.transfer(0x00);
   }
   digitalWrite(FLASH_CS, HIGH);
+}
+
+uint8_t write_register(uint8_t cmd, uint8_t *regdata, uint8_t size){
+  uint8_t status = FLASH_OK;
+  wait_flash();
+  digitalWrite(FLASH_CS, LOW);
+  SPI.transfer(cmd); // WRITE ID komutunu gönder
+  for (uint8_t i=0; i<size; i++) {
+    status = SPI.transfer(regdata[i]);
+  }
+  digitalWrite(FLASH_CS, HIGH);
+  return status;
 }
 
 uint8_t write_cmd(uint8_t cmd){
@@ -114,10 +134,10 @@ uint8_t write_flash(uint32_t address, uint8_t *data, uint32_t size){
     page_byte -=PAGE_BYTE;
     
     //waiting finish
-    wait_flash();
+    //wait_flash();
   }
 
-  return status==FLASH_OK;
+  return FLASH_OK;
 }
 
 uint8_t read_flash(uint32_t address, uint8_t *data, uint32_t size){ 
@@ -131,9 +151,17 @@ uint8_t read_flash(uint32_t address, uint8_t *data, uint32_t size){
   return status;
 }
 
+uint16_t read_device_id(){
+  uint8_t read_data[3];
+  read_register(0x9F, read_data, 3);
+
+  return read_data[0]<<8 | read_data[1];
+}
+
 uint8_t reset_flash(){
   uint8_t status = FLASH_OK;
   write_cmd(0x66);
+  wait_flash();
   status = write_cmd(0x99);
   wait_flash();
   return status == FLASH_OK;
