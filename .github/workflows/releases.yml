@@ -26,7 +26,7 @@ jobs:
         id: extract_body
         run: |
           BODY=$(sed -n '/### Changed/,$p' CHANGELOG.md | sed '1d')
-          echo $BODY > release
+          echo "::set-output name=body::${BODY}"
           
       - name: Create release
         uses: actions/create-release@v1
@@ -37,4 +37,4 @@ jobs:
           release_name: Release ${{ steps.extract_version.outputs.version }}
           body: |
             Release ${{ steps.extract_version.outputs.version }}
-          body_file: release
+            ${{ steps.extract_body.outputs.outputs.body }}
