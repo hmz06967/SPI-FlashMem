@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  release:
+  changelog:
     runs-on: ubuntu-latest
 
     steps:
