@@ -6,3 +6,4 @@ All notable changes to this project will be documented in this file.
  - Fixed a typo in the README
  - Bugfix for #24
 
+
