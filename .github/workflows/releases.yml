@@ -16,7 +16,7 @@ jobs:
       - name: Extract version from changelog
         id: extract_version
         run: |
-          VERSION=$(grep -E -m1 "^# " CHANGELOG.md | cut -d ' ' -f 2)
+          VERSION=$(grep -E -m1 "^## v" CHANGELOG.md | cut -d ' ' -f 2)
           echo "::set-output name=version::${VERSION}"
 
       - name: Create release
