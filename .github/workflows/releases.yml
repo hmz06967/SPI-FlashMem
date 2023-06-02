@@ -22,6 +22,12 @@ jobs:
       - name: Update version in library.properties
         run: sed -i 's/^version=.*$/version=$(VERSION)/g' library.properties
 
+      - name: Extract release body
+        id: extract_body
+        run: |
+          BODY=$(sed -n '/### Changed/,$p' CHANGELOG.md | sed '1d')
+          echo $BODY > release
+          
       - name: Create release
         uses: actions/create-release@v1
         env:
@@ -31,3 +37,4 @@ jobs:
           release_name: Release ${{ steps.extract_version.outputs.version }}
           body: |
             Release ${{ steps.extract_version.outputs.version }}
+          body_file: release
