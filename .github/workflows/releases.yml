@@ -20,12 +20,12 @@ jobs:
           echo "::set-output name=version::${VERSION}"
       
       - name: Update version in library.properties
-        run: sed -i 's/^version=.*$/version=$(VERSION)/g' library.properties
+        run: sed -i "s/^version=.*$/version=${{ steps.extract_version.outputs.version }}/g" library.properties
 
       - name: Extract release body
         id: extract_body
         run: |
-          BODY=$(sed -n '/### Changed/,$p' CHANGELOG.md | sed '1d')
+          BODY=$(awk '/^### Changed$/{flag=1; next} /^##/{flag=0} flag' CHANGELOG.md | sed '/^$/d')
           echo "::set-output name=body::${BODY}"
           
       - name: Create release
