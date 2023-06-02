@@ -18,6 +18,9 @@ jobs:
         run: |
           VERSION=$(grep -E -m1 "^## v" CHANGELOG.md | cut -d ' ' -f 2)
           echo "::set-output name=version::${VERSION}"
+      
+      - name: Update version in library.properties
+        run: sed -i 's/^version=.*$/version=$(VERSION)/g' library.properties
 
       - name: Create release
         uses: actions/create-release@v1
