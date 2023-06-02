@@ -25,7 +25,7 @@ jobs:
       - name: Extract release body
         id: extract_body
         run: |
-          BODY=$(awk '/^ /{flag=1; next} ' /^### Changed$/{flag=1; next} /^##/{flag=0} flag' CHANGELOG.md)
+          BODY=$(awk '/^ /{flag=1; next} /^### Changed$/{flag=1; next} /^##/{flag=0} flag' CHANGELOG.md)
           echo "::set-output name=body::${BODY}"
           
       - name: Create release
