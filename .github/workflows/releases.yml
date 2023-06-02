@@ -1,27 +1,41 @@
-name: Releases
+name: Release
+
 on:
   push:
     branches:
       - main
 
 jobs:
-  changelog:
+  release:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: conventional Changelog Action
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3
-        with:
-          github-token: ${{ secrets.github_token }}
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: create release
-        uses: actions/create-release@v1
-        if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          release_name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate changelog
+        run: npm run changelog
+
+      - name: Extract version from changelog
+        id: extract_version
+        run: |
+          VERSION=$(grep -E -m1 "^# " CHANGELOG.md | cut -d ' ' -f 2)
+          echo "::set-output name=version::${VERSION}"
+
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.extract_version.outputs.version }}
+          release_name: Release ${{ steps.extract_version.outputs.version }}
+          body: |
+            Release ${{ steps.extract_version.outputs.version }}
