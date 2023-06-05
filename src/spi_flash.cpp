@@ -13,7 +13,7 @@ uint8_t init_flash(void){
   // put your setup code here, to run once:
   pinMode(FLASH_CS, OUTPUT);
   SPI.begin();
-  SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
+  SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
 
   //write_enable();
   digitalWrite(FLASH_CS, HIGH);
@@ -101,7 +101,9 @@ uint8_t erase_sector(uint16_t sector){
   //resume
   write_cmd(0x7A);
   //erase sector
-  write_cmd(0x20);
+  digitalWrite(FLASH_CS, LOW);
+  write_addr(0x20, sector * SECTOR_BYTE);
+  digitalWrite(FLASH_CS, HIGH);
   //waiting finish
   wait_flash();
   return FLASH_OK;
@@ -133,8 +135,8 @@ uint8_t write_flash(uint32_t address, uint8_t *data, uint32_t size){
     address += PAGE_BYTE;
     page_byte -=PAGE_BYTE;
     
-    //waiting finish
-    //wait_flash();
+    //waiting finish 
+    wait_flash();
   }
 
   return FLASH_OK;
