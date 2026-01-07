@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## v1.3.6
+## v1.3.7
 ### Changed
  - Added uart_test example files
    
